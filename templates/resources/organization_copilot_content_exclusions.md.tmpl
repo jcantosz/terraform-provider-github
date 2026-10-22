@@ -1,0 +1,33 @@
+---
+page_title: "{{.Name}} ({{.Type}}) - {{.RenderedProviderName}}"
+description: |-
+  Authoritatively manages organization-wide GitHub Copilot content exclusions.
+---
+
+# {{.Name}} ({{.Type}})
+
+{{ .Description }}
+
+~> **Authoritative policy and destructive removal:** this resource owns the complete content exclusion policy for the provider organization. Every apply replaces all rules, including rules configured outside Terraform. Destroy sends an empty policy (`{}`), clearing **all organization-wide content exclusions**, not merely the blocks in this configuration. It does not restore the previous policy. Omitting all `rule` blocks also clears the policy. Manage this policy with only one resource per organization.
+
+~> **Comments are lost:** GitHub's API does not return comments, and updating the policy through this API deletes all existing comments. The API is in **public preview** and may change.
+
+The provider `owner` must explicitly identify an organization. Each `rule` maps a repository key to a set of paths. Keys may include the wildcard `*` and repository URLs supported by GitHub; they are sent verbatim. Duplicate repository keys are rejected; combine paths for a repository into one block. The order of rules and paths does not matter.
+
+See [GitHub's content exclusion guide](https://docs.github.com/en/copilot/how-tos/configure-content-exclusion/exclude-content-from-copilot) for supported repository keys, path patterns, and limitations. Exclusions are not supported by every Copilot feature and are not a substitute for access controls.
+
+## Permissions
+
+Organization owner access and access to the Copilot content exclusion feature are required. See the official REST API documentation for [getting rules](https://docs.github.com/en/rest/copilot/copilot-content-exclusion-management#get-copilot-content-exclusion-rules-for-an-organization) and [setting rules](https://docs.github.com/en/rest/copilot/copilot-content-exclusion-management#set-copilot-content-exclusion-rules-for-an-organization) for supported authentication methods and scopes. The documented classic personal access token and OAuth scopes are `copilot` or `read:org` for reads, and `copilot` for writes. A token that can read the policy is not necessarily authorized to manage it.
+
+## Example Usage
+
+{{ tffile "examples/resources/organization_copilot_content_exclusions/resource.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import using the organization slug, which must match the provider `owner`. Refresh retrieves the full policy, except comments, which the API does not expose. Import an existing policy before applying to review changes carefully:
+
+{{ codefile "shell" "examples/resources/organization_copilot_content_exclusions/import.sh" }}

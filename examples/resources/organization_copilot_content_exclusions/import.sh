@@ -1,0 +1,1 @@
+terraform import github_organization_copilot_content_exclusions.example my-organization

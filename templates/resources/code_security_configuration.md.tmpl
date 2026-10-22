@@ -1,0 +1,53 @@
+---
+page_title: "{{.Name}} ({{.Type}}) - {{.RenderedProviderName}}"
+description: |-
+  Manage an organization code security configuration.
+---
+
+# {{.Name}} ({{.Type}})
+
+Manages one organization code security configuration. See the
+[GitHub API permissions and prerequisites](https://docs.github.com/en/rest/code-security/configurations#create-a-code-security-configuration)
+for supported token types, organization roles, and licensing requirements.
+
+Omitted feature settings retain GitHub defaults on creation and current values
+on update. String settings support `enabled`, `disabled`, and `not_set` unless
+their schema states otherwise. `advanced_security` is an umbrella setting that
+can also enable Secret Protection; prefer `code_security` and
+`secret_protection` to control these products separately. All configuration
+feature fields exposed by the pinned API client are supported, including
+secret scanning, push protection, delegated bypass reviewers, validity checks,
+non-provider patterns, generic secrets, extended metadata, and delegated alert
+dismissal settings. These are configuration-wide enablement settings, not the
+separate endpoints for per-pattern policies or custom pattern definitions.
+Dependency submission runner options are part of
+the security configuration, not organization Actions permissions.
+
+Delegated bypass reviewers accept team IDs (`TEAM`) and organization role IDs
+(`ROLE`). An explicit empty `reviewers` set clears the reviewer list. Omit the
+options block to preserve GitHub's existing options. GitHub returns
+`security_configuration_id` for each reviewer; it is read-only. The pinned API
+client does not expose reviewer bypass modes, so this resource cannot manage
+`ALWAYS` versus `EXEMPT` modes.
+
+Defaults and repository assignments are separate resources:
+[github_code_security_configuration_default](code_security_configuration_default)
+and [github_code_security_configuration_repository](code_security_configuration_repository).
+Deleting a configuration deletes the configuration itself and GitHub removes
+its associations; it does not delete repositories. Do not manage the same
+configuration through multiple resources or competing automation. Enabling
+features can require licenses, repository prerequisites, and compatible feature
+settings; GitHub validates these combinations.
+
+## Example Usage
+
+{{ tffile "examples/resources/code_security_configuration/resource.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import using the numeric configuration ID. The provider's configured owner
+must be the organization containing the configuration.
+
+{{ codefile "shell" "examples/resources/code_security_configuration/import.sh" }}

@@ -1,0 +1,1 @@
+terraform import github_code_security_configuration_repository.example 123456:789012

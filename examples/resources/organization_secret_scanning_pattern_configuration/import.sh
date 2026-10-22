@@ -1,0 +1,2 @@
+terraform import github_organization_secret_scanning_pattern_configuration.provider_pattern my-organization:provider:GITHUB_PERSONAL_ACCESS_TOKEN
+terraform import github_organization_secret_scanning_pattern_configuration.custom_pattern my-organization:custom:cp_2

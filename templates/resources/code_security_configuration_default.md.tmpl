@@ -1,0 +1,34 @@
+---
+page_title: "{{.Name}} ({{.Type}}) - {{.RenderedProviderName}}"
+description: |-
+  Manage the new repository default scope for an organization security configuration.
+---
+
+# {{.Name}} ({{.Type}})
+
+Manages one configuration's default for **new** repositories. See the
+[GitHub API permissions and prerequisites](https://docs.github.com/en/rest/code-security/configurations#set-a-code-security-configuration-as-a-default-for-an-organization).
+This does not attach the configuration to existing repositories.
+
+`default_for_new_repos` accepts `all`, `public`, `private_and_internal`, or
+`none`. `none` declaratively ensures this configuration is not a default.
+Deleting this resource sets the scope to `none`, without deleting the
+configuration or detaching existing repositories.
+
+Scopes of defaults for different configurations must not overlap. GitHub can
+replace another configuration's default when setting an overlapping scope.
+Use one owner for these settings; do not declare conflicting defaults or
+manage the same configuration's default in multiple resources.
+
+## Example Usage
+
+{{ tffile "examples/resources/code_security_configuration_default/resource.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import using the numeric configuration ID. The default scope is read from
+GitHub; configurations without a default import with scope `none`.
+
+{{ codefile "shell" "examples/resources/code_security_configuration_default/import.sh" }}

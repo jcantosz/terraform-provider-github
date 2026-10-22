@@ -33,6 +33,51 @@ Detailed documentation for the GitHub provider can be found in the [Terraform Re
 
 For instructions on how to contribute to the GitHub Terraform provider, see the [Contributing Guide](CONTRIBUTING.md).
 
+## Fork prerelease binaries
+
+The [Fork prerelease workflow](.github/workflows/fork-release.yaml) builds unsigned
+development binaries without the GPG secrets used by the existing signed release
+workflow. It runs only outside the upstream `integrations/terraform-provider-github`
+repository and publishes to the repository where it is run.
+
+Commit and push the workflow and all provider changes first. You can then run it
+manually against a branch or tag using a new `local-v` release tag:
+
+```sh
+gh workflow run fork-release.yaml \
+  --repo jcantosz/terraform-provider-github \
+  --ref main \
+  -f tag=local-v6.13.0-test.1
+```
+
+Alternatively, push a tag for the commit to release:
+
+```sh
+git tag local-v6.13.0-test.1
+git push origin local-v6.13.0-test.1
+```
+
+Tags must have the form `local-vMAJOR.MINOR.PATCH` with an optional prerelease
+suffix. For manual runs, an existing tag must point to the selected commit.
+Choose a new tag for each release; existing releases are not overwritten.
+The `local-v` prefix avoids triggering the signed upstream `v*` release workflow.
+
+After unit tests pass, the workflow builds Linux, macOS, and Windows binaries for
+both `amd64` and `arm64`. Each ZIP contains a versioned provider executable. The
+release also includes a SHA-256 checksum file. Uploads are staged in a draft before
+the release is published as a prerelease, never as the repository's latest release.
+If an upload fails, inspect the draft before retrying; the workflow deliberately
+does not replace existing releases or delete their assets.
+
+The built-in `GITHUB_TOKEN` is the only required release credential; repository
+Actions settings must allow the publish job's `contents: write` permission.
+These builds are **not signed Terraform Registry releases**. To use one with the
+existing local-provider setup, download the ZIP for your platform, verify it
+against the checksum file, and extract it to a dedicated directory. Point the
+`integrations/github` development override at that directory instead of the local
+build directory. Keep only one provider executable in the override directory.
+Terraform's development override warning is expected.
+
 ## Roadmap
 
 This project uses [Milestones](https://github.com/integrations/terraform-provider-github/milestones) to scope upcoming features and bug fixes. Issues that receive the most recent discussion or the most reactions will be more likely to be included in an upcoming release.

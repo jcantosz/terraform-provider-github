@@ -1,0 +1,29 @@
+---
+page_title: "{{.Name}} ({{.Type}}) - {{.RenderedProviderName}}"
+description: |-
+  Manages fork pull request workflows in private repositories in an organization.
+---
+
+# {{.Name}} ({{.Type}})
+
+{{ .Description }}
+
+~> **Destroy changes organization policy:** destroying this resource disables workflows from fork pull requests in private repositories (`run_workflows_from_fork_pull_requests = false`). It does not restore the policy that existed before Terraform managed it. Other fork workflow settings are not managed or sent by this resource.
+
+The provider `owner` must explicitly identify an organization. Only one resource should manage this organization-wide setting. Enterprise policy can restrict the values available to the organization.
+
+## Permissions
+
+Organization administration access is required. See the GitHub REST API documentation for [getting](https://docs.github.com/en/rest/actions/permissions#get-private-repo-fork-pr-workflows-settings-for-an-organization) and [updating](https://docs.github.com/en/rest/actions/permissions#set-private-repo-fork-pr-workflows-settings-for-an-organization) private repository fork PR workflow settings for supported authentication methods, token scopes, fine-grained organization permissions, and plan availability.
+
+## Example Usage
+
+{{ tffile "examples/resources/actions_organization_fork_pr_workflows/resource.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import using the organization slug, which must match the provider `owner`:
+
+{{ codefile "shell" "examples/resources/actions_organization_fork_pr_workflows/import.sh" }}

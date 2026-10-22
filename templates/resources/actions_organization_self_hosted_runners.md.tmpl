@@ -1,0 +1,31 @@
+---
+page_title: "{{.Name}} ({{.Type}}) - {{.RenderedProviderName}}"
+description: |-
+  Manages organization self-hosted runner repository access.
+---
+
+# {{.Name}} ({{.Type}})
+
+{{ .Description }}
+
+~> **Destroy changes organization policy:** destroying this resource sets `enabled_repositories = "none"`, disabling self-hosted runner access for repositories in the organization. It does not delete runners or runner groups and does not restore the previous policy. The inactive selected repository list is not explicitly cleared on destroy; configuring `selected` always replaces it, including when the desired list is empty.
+
+The provider `owner` must explicitly identify an organization. Only one resource should manage this organization-wide policy. This policy is separate from runner group access and enterprise restrictions, which can impose additional limits.
+
+`selected_repository_ids` must be empty or omitted for `all` and `none`. For `selected`, an omitted or empty set explicitly allows no repositories. Changing from `selected` to another policy clears the selected IDs from Terraform state without sending a selected-list request.
+
+## Permissions
+
+Organization administration access is required. See GitHub's REST API documentation for [reading](https://docs.github.com/en/rest/actions/permissions#get-self-hosted-runners-settings-for-an-organization), [updating](https://docs.github.com/en/rest/actions/permissions#set-self-hosted-runners-settings-for-an-organization), and [setting selected repositories](https://docs.github.com/en/rest/actions/permissions#set-repositories-allowed-to-use-self-hosted-runners-in-an-organization) for supported token scopes and fine-grained organization permissions.
+
+## Example Usage
+
+{{ tffile "examples/resources/actions_organization_self_hosted_runners/resource.tf" }}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import using the organization slug, which must match the provider `owner`. Read retrieves all pages of selected repository IDs:
+
+{{ codefile "shell" "examples/resources/actions_organization_self_hosted_runners/import.sh" }}
